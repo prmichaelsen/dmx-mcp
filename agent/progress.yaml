@@ -129,7 +129,7 @@ milestones:
     document: agent/milestones/milestone-4-cue-management-fade-engine.md
     estimated_weeks: 1.5
     tasks_total: 6
-    tasks_completed: 3
+    tasks_completed: 4
     tasks:
       - id: 18
         title: Implement CueList and Cue Data Management
@@ -148,7 +148,8 @@ milestones:
         document: agent/tasks/milestone-4-cue-management-fade-engine/task-20-cue-management-tools.md
       - id: 21
         title: Implement reorder_cues Tool
-        status: not_started
+        status: completed
+        completed_date: 2026-03-01
         document: agent/tasks/milestone-4-cue-management-fade-engine/task-21-reorder-cues-tool.md
       - id: 22
         title: Register Cue MCP Tools
