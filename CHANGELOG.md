@@ -11,7 +11,8 @@ All notable changes to this project will be documented in this file.
 - Scene-to-DMX channel mapping (`sceneToDMX`) for converting scenes to raw DMX arrays
 - `preview_scene` MCP tool for live DMX output through OLA
 - 5 scene MCP tools: `create_scene`, `update_scene`, `delete_scene`, `list_scenes`, `preview_scene`
-- Scene manager unit tests and DMX mapper unit tests
+- Scene manager unit tests (23 tests): CRUD, validation, fixture state merging
+- DMX mapper unit tests (11 tests): channel mapping, multi-fixture, multi-universe, defaults, edge cases
 
 ## [0.2.0] - 2026-03-01
 

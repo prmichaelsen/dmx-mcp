@@ -91,11 +91,11 @@ milestones:
 
   - id: M3
     title: Scene Programming
-    status: in_progress
+    status: completed
     document: agent/milestones/milestone-3-scene-programming.md
     estimated_weeks: 1
     tasks_total: 5
-    tasks_completed: 4
+    tasks_completed: 5
     tasks:
       - id: 13
         title: Implement Scene Manager
@@ -119,7 +119,8 @@ milestones:
         document: agent/tasks/milestone-3-scene-programming/task-16-register-scene-mcp-tools.md
       - id: 17
         title: Add Scene Programming Tests
-        status: not_started
+        status: completed
+        completed_date: 2026-03-01
         document: agent/tasks/milestone-3-scene-programming/task-17-scene-programming-tests.md
 
   - id: M4
@@ -231,35 +232,36 @@ documentation:
 
 progress:
   planning: 100
-  implementation: 40
-  overall: 53
+  implementation: 55
+  overall: 65
 
 recent_work:
+  - date: 2026-03-01
+    description: |
+      Completed M3: Scene Programming. Full scene CRUD, DMX channel mapping,
+      and 5 scene MCP tools. Server now exposes 12 tools total.
+    items:
+      - ✅ M3 complete (5/5 tasks): SceneManager, DMX mapper, preview_scene, MCP tools, tests
+      - ✅ 110 tests passing across 5 test files
+      - ✅ 12 MCP tools registered
+  - date: 2026-03-01
+    description: |
+      Completed M2: Fixture Management with tests and create_fixture_profile tool.
+    items:
+      - ✅ M2 complete (6/6 tasks)
+      - ✅ 76 tests passing
   - date: 2026-03-01
     description: |
       Implemented MVP: single light control via MCP. All M1 tasks complete,
       plus core M2 and M5 tasks for fixture management and live control.
     items:
-      - ✅ M1 complete (6/6 tasks): TypeScript project, MCP server, types, OLA client, tests, scripts
-      - ✅ M2 partial (4/6 tasks): ProfileRegistry, FixtureManager, built-in profiles, MCP tools registered
+      - ✅ M1 complete (6/6 tasks)
       - ✅ M5 partial (2/6 tasks): set_fixture_color and blackout implemented
-      - ✅ 12 OLA client unit tests passing
-      - ✅ MCP server verified with 6 tools via Claude Code
-      - 📋 Next: Task 9 (create_fixture_profile tool), Task 12 (fixture tests)
-  - date: 2026-03-01
-    description: |
-      Planned all milestones and tasks via @acp-plan from design document.
-    items:
-      - ✅ Created 6 milestone documents (M1-M6)
-      - ✅ Created 35 task documents across all milestones
-      - ✅ Created OLA hardware setup design document
-      - ✅ Updated progress.yaml with full project roadmap
 
 next_steps:
-  - "Complete M2: Implement Task 9 (create_fixture_profile tool) and Task 12 (fixture management tests)"
-  - "Set up OLA: Follow agent/design/local.ola-hardware-setup.md for hardware prep"
-  - "Complete M3 (Scene Programming) for scene creation and preview"
-  - "Complete M4-M6 for full feature set"
+  - "Complete M4 (Cue Management & Fade Engine) for cue lists and fading"
+  - "Complete remaining M5 tasks (set_fixture_dimmer, get_dmx_state, cue sequencer)"
+  - "Complete M6 (Show Management & Effects) for persistence and effects"
 
 notes:
   - Hardware: Enttec USB-C DMX adapter (OLA-native support)
