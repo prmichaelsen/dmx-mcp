@@ -11,6 +11,15 @@ import {
 import type { ChannelType, ChannelDefinition, FixtureProfile } from "./types/index.js";
 import { FixtureManager } from "./fixtures/manager.js";
 import { setFixtureColor, blackout } from "./playback/live-control.js";
+import { SceneManager } from "./scenes/manager.js";
+import {
+  handlePreviewScene,
+  handleCreateScene,
+  handleUpdateScene,
+  handleDeleteScene,
+  handleListScenes,
+  formatPreviewResult,
+} from "./scenes/tools.js";
 
 export function createServer() {
   const olaHost = process.env.OLA_HOST ?? "localhost";
@@ -24,6 +33,7 @@ export function createServer() {
   initializeBuiltInProfiles(profileRegistry);
 
   const fixtureManager = new FixtureManager(profileRegistry);
+  const sceneManager = new SceneManager(fixtureManager);
 
   const server = new McpServer({
     name: "dmx-mcp",
@@ -252,6 +262,153 @@ export function createServer() {
       } catch (err) {
         return {
           content: [{ type: "text" as const, text: `Error: ${(err as Error).message}` }],
+          isError: true,
+        };
+      }
+    },
+  );
+
+  // --- Scene Tools ---
+
+  server.tool(
+    "create_scene",
+    "Create a new lighting scene with fixture states. Each fixture state maps channel names (red, green, blue, dimmer, etc.) to values (0-255). Fixture IDs must reference patched fixtures.",
+    {
+      id: z.string().describe("Unique scene ID (e.g. 'warm-wash', 'blue-chase-start')"),
+      name: z.string().describe("Human-readable scene name (e.g. 'Warm Wash', 'Blue Chase Start')"),
+      fixtureStates: z
+        .record(
+          z.string(),
+          z.record(z.string(), z.number().min(0).max(255)),
+        )
+        .describe(
+          'Map of fixture ID to channel values. Example: { "par-1": { "red": 255, "green": 128, "blue": 0 } }',
+        ),
+    },
+    async (args) => {
+      try {
+        const result = handleCreateScene(
+          args.id,
+          args.name,
+          args.fixtureStates,
+          sceneManager,
+        );
+        return {
+          content: [
+            { type: "text" as const, text: JSON.stringify(result, null, 2) },
+          ],
+        };
+      } catch (err) {
+        return {
+          content: [
+            { type: "text" as const, text: `Error: ${(err as Error).message}` },
+          ],
+          isError: true,
+        };
+      }
+    },
+  );
+
+  server.tool(
+    "update_scene",
+    "Update an existing scene by merging new fixture states. Only the specified channels are changed; other existing channels are preserved.",
+    {
+      id: z.string().describe("ID of the scene to update"),
+      fixtureStates: z
+        .record(
+          z.string(),
+          z.record(z.string(), z.number().min(0).max(255)),
+        )
+        .describe(
+          'Map of fixture ID to channel values to merge. Example: { "par-1": { "red": 200 } } updates only the red channel.',
+        ),
+    },
+    async (args) => {
+      try {
+        const result = handleUpdateScene(
+          args.id,
+          args.fixtureStates,
+          sceneManager,
+        );
+        return {
+          content: [
+            { type: "text" as const, text: JSON.stringify(result, null, 2) },
+          ],
+        };
+      } catch (err) {
+        return {
+          content: [
+            { type: "text" as const, text: `Error: ${(err as Error).message}` },
+          ],
+          isError: true,
+        };
+      }
+    },
+  );
+
+  server.tool(
+    "delete_scene",
+    "Delete a scene by its ID. This action cannot be undone.",
+    {
+      id: z.string().describe("ID of the scene to delete"),
+    },
+    async (args) => {
+      try {
+        const result = handleDeleteScene(args.id, sceneManager);
+        return {
+          content: [
+            { type: "text" as const, text: JSON.stringify(result, null, 2) },
+          ],
+        };
+      } catch (err) {
+        return {
+          content: [
+            { type: "text" as const, text: `Error: ${(err as Error).message}` },
+          ],
+          isError: true,
+        };
+      }
+    },
+  );
+
+  server.tool(
+    "list_scenes",
+    "List all scenes with summary information including ID, name, and fixture count.",
+    {},
+    async () => {
+      const result = handleListScenes(sceneManager);
+      return {
+        content: [
+          { type: "text" as const, text: JSON.stringify(result, null, 2) },
+        ],
+      };
+    },
+  );
+
+  server.tool(
+    "preview_scene",
+    "Output a scene to DMX in real-time through OLA. The lights will immediately change to reflect the scene. Requires OLA to be running and connected to DMX hardware.",
+    {
+      sceneId: z.string().describe("ID of the scene to preview"),
+    },
+    async (args) => {
+      try {
+        const result = await handlePreviewScene(
+          args.sceneId,
+          sceneManager,
+          fixtureManager,
+          olaClient,
+        );
+        return {
+          content: [
+            { type: "text" as const, text: formatPreviewResult(result) },
+          ],
+        };
+      } catch (err) {
+        return {
+          content: [
+            { type: "text" as const, text: `Error: ${(err as Error).message}` },
+          ],
           isError: true,
         };
       }

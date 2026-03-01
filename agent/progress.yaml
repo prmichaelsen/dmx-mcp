@@ -95,7 +95,7 @@ milestones:
     document: agent/milestones/milestone-3-scene-programming.md
     estimated_weeks: 1
     tasks_total: 5
-    tasks_completed: 3
+    tasks_completed: 4
     tasks:
       - id: 13
         title: Implement Scene Manager
@@ -114,7 +114,8 @@ milestones:
         document: agent/tasks/milestone-3-scene-programming/task-15-preview-scene-tool.md
       - id: 16
         title: Register Scene MCP Tools
-        status: not_started
+        status: completed
+        completed_date: 2026-03-01
         document: agent/tasks/milestone-3-scene-programming/task-16-register-scene-mcp-tools.md
       - id: 17
         title: Add Scene Programming Tests
