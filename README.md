@@ -1,4 +1,4 @@
-# lightkey-mcp
+# dmx-mcp
 
 MCP server for programming and controlling DMX lighting shows via OLA, driven by AI agents.
 
@@ -10,7 +10,7 @@ An MCP server that gives AI agents the ability to design, program, and run DMX l
 
 **Architecture:**
 ```
-Claude (agent)  →  lightkey-mcp  →  OLA REST API (:9090)  →  Enttec USB DMX  →  Fixtures
+Claude (agent)  →  dmx-mcp  →  OLA REST API (:9090)  →  Enttec USB DMX  →  Fixtures
 ```
 
 ## Features
@@ -56,7 +56,7 @@ See [AGENT.md](./AGENT.md) for complete ACP documentation.
 ## Project Structure
 
 ```
-lightkey-mcp/
+dmx-mcp/
 ├── AGENT.md              # ACP methodology
 ├── agent/                # ACP directory
 │   ├── design/          # Design documents

@@ -1,5 +1,5 @@
 project:
-  name: lightkey-mcp
+  name: dmx-mcp
   version: 0.1.0
   type: mcp-server
   started: 2026-03-01
