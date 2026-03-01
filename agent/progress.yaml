@@ -168,7 +168,7 @@ milestones:
     document: agent/milestones/milestone-5-playback-live-control.md
     estimated_weeks: 1
     tasks_total: 6
-    tasks_completed: 3
+    tasks_completed: 4
     tasks:
       - id: 24
         title: Implement Cue Sequencer
@@ -187,7 +187,8 @@ milestones:
         document: agent/tasks/milestone-5-playback-live-control/task-26-set-fixture-color-tool.md
       - id: 27
         title: Implement set_fixture_dimmer Tool
-        status: not_started
+        status: completed
+        completed_date: 2026-03-01
         document: agent/tasks/milestone-5-playback-live-control/task-27-set-fixture-dimmer-tool.md
       - id: 28
         title: Implement get_dmx_state Tool

@@ -71,6 +71,124 @@ export async function setFixtureColor(
   return { fixtureId: params.fixtureId, channelsSet };
 }
 
+export interface SetFixtureDimmerParams {
+  fixtureId: string;
+  level: number;
+  unit?: "absolute" | "percent";
+}
+
+export interface SetFixtureDimmerResult {
+  fixtureId: string;
+  success: boolean;
+  dimmerChannel?: {
+    name: string;
+    dmxAddress: number;
+    value: number;
+  };
+  error?: string;
+  hint?: string;
+}
+
+export async function setFixtureDimmer(
+  params: SetFixtureDimmerParams,
+  fixtureManager: FixtureManager,
+  olaClient: OLAClient,
+): Promise<SetFixtureDimmerResult> {
+  const fixture = fixtureManager.getFixture(params.fixtureId);
+  if (!fixture) {
+    return {
+      fixtureId: params.fixtureId,
+      success: false,
+      error: `Fixture "${params.fixtureId}" not found`,
+    };
+  }
+
+  const channels = fixture.profile.channels;
+
+  // Convert level to absolute 0-255
+  let absoluteLevel: number;
+  if (params.unit === "percent") {
+    const clamped = Math.max(0, Math.min(1, params.level));
+    absoluteLevel = Math.round(clamped * 255);
+  } else {
+    absoluteLevel = Math.max(0, Math.min(255, Math.round(params.level)));
+  }
+
+  // Find the dimmer channel
+  let dimmerIndex = -1;
+  for (let i = 0; i < channels.length; i++) {
+    if (channels[i].type === "dimmer") {
+      dimmerIndex = i;
+      break;
+    }
+  }
+
+  if (dimmerIndex === -1) {
+    const hasRGB = channels.some(
+      (ch) => ch.type === "red" || ch.type === "green" || ch.type === "blue",
+    );
+
+    if (hasRGB) {
+      return {
+        fixtureId: params.fixtureId,
+        success: false,
+        error: `Fixture "${params.fixtureId}" (${fixture.profile.manufacturer} ${fixture.profile.model}) has no dedicated dimmer channel.`,
+        hint:
+          `This fixture uses RGB channels for brightness control. ` +
+          `To dim it, scale the RGB values proportionally using set_fixture_color. ` +
+          `For example, for 50% brightness with red: ` +
+          `set_fixture_color({ fixtureId: "${params.fixtureId}", red: 128, green: 0, blue: 0 })`,
+      };
+    }
+
+    return {
+      fixtureId: params.fixtureId,
+      success: false,
+      error:
+        `Fixture "${params.fixtureId}" (${fixture.profile.manufacturer} ${fixture.profile.model}) ` +
+        `has no dimmer or color channels. ` +
+        `Available channels: ${channels.map((c) => c.name).join(", ")}`,
+    };
+  }
+
+  // Read current DMX state to preserve other channels
+  let currentChannels: number[];
+  try {
+    currentChannels = await olaClient.getDMX(fixture.universe);
+    const dmxValues = new Array(512).fill(0);
+    for (let i = 0; i < currentChannels.length && i < 512; i++) {
+      dmxValues[i] = currentChannels[i];
+    }
+    currentChannels = dmxValues;
+  } catch {
+    currentChannels = new Array(512).fill(0);
+  }
+
+  const dmxAddress = fixture.startAddress + dimmerIndex;
+  const arrayIndex = dmxAddress - 1;
+
+  if (arrayIndex < 0 || arrayIndex >= 512) {
+    return {
+      fixtureId: params.fixtureId,
+      success: false,
+      error: `Dimmer channel maps to DMX address ${dmxAddress}, which is outside the valid range 1-512`,
+    };
+  }
+
+  currentChannels[arrayIndex] = absoluteLevel;
+  await olaClient.setDMX(fixture.universe, currentChannels);
+
+  return {
+    fixtureId: params.fixtureId,
+    success: true,
+    dimmerChannel: {
+      name: channels[dimmerIndex].name,
+      dmxAddress,
+      value: absoluteLevel,
+    },
+  };
+}
+
 export async function blackout(
   fixtureManager: FixtureManager,
   olaClient: OLAClient,
