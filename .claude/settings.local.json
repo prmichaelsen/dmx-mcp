@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(test:*)",
+      "Bash(git add:*)",
+      "Bash(npm install:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npx vitest:*)",
+      "Bash(timeout 5 node:*)",
+      "Bash(printf:*)",
+      "Bash(node:*)",
+      "Bash(claude mcp:*)",
+      "mcp__dmx__list_fixture_profiles",
+      "mcp__dmx__patch_fixture",
+      "mcp__dmx__list_fixtures",
+      "mcp__dmx__set_fixture_color",
+      "mcp__dmx__blackout"
+    ]
+  }
+}
