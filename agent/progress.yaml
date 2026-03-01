@@ -3,7 +3,7 @@ project:
   version: 0.1.0
   type: mcp-server
   started: 2026-03-01
-  status: completed
+  status: in_progress
   description: |
     MCP server for programming and controlling DMX lighting shows via OLA.
     Provides high-level abstractions (fixtures, scenes, cues, effects) as MCP tools,
@@ -240,16 +240,42 @@ milestones:
         completed_date: 2026-03-01
         document: agent/tasks/milestone-6-show-management-effects/task-35-end-to-end-tests.md
 
+  - id: M7
+    title: DMX Emulator & Monitor UI
+    status: not_started
+    document: agent/milestones/milestone-7-dmx-emulator.md
+    estimated_weeks: 0.5
+    tasks_total: 4
+    tasks_completed: 0
+    tasks:
+      - id: 36
+        title: Implement OLA Emulator Server
+        status: completed
+        completed_date: 2026-03-01
+        document: agent/tasks/milestone-7-dmx-emulator/task-36-ola-emulator-server.md
+      - id: 37
+        title: Implement Browser Monitor UI
+        status: not_started
+        document: agent/tasks/milestone-7-dmx-emulator/task-37-browser-monitor-ui.md
+      - id: 38
+        title: Add Emulator Integration Tests
+        status: not_started
+        document: agent/tasks/milestone-7-dmx-emulator/task-38-emulator-integration-tests.md
+      - id: 39
+        title: Add Dev Scripts and Documentation
+        status: not_started
+        document: agent/tasks/milestone-7-dmx-emulator/task-39-dev-scripts-documentation.md
+
 documentation:
-  design_documents: 3
-  milestone_documents: 6
+  design_documents: 4
+  milestone_documents: 7
   pattern_documents: 0
-  task_documents: 35
+  task_documents: 39
 
 progress:
   planning: 100
-  implementation: 100
-  overall: 100
+  implementation: 90
+  overall: 93
 
 recent_work:
   - date: 2026-03-01
@@ -303,14 +329,14 @@ recent_work:
       - ✅ M5 partial (2/6 tasks): set_fixture_color and blackout implemented
 
 next_steps:
-  - "All milestones complete. Project is feature-complete."
+  - "Implement M7 (DMX Emulator & Monitor UI) for hardware-free development and testing"
 
 notes:
   - Hardware: Enttec USB-C DMX adapter (OLA-native support)
   - Backend: OLA REST API on localhost:9090
   - Transport: DMX512 via Enttec
   - Design docs: agent/design/local.dmx-lighting-mcp.md, agent/design/local.ola-hardware-setup-linux.md, agent/design/local.ola-hardware-setup-macos.md
-  - Total estimated duration: ~6.5 weeks across 6 milestones
+  - Total estimated duration: ~7 weeks across 7 milestones
   - "NOTE: MVP implementation used a simplified API vs task docs. ProfileRegistry keys by id (not manufacturer+model), FixtureManager takes profileId (not profile object), validateProfile throws (not returns errors array)."
 
 current_blockers: []
