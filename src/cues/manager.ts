@@ -118,6 +118,10 @@ export class CueManager {
     return cueList;
   }
 
+  clear(): void {
+    this.cueLists.clear();
+  }
+
   private validateSceneReference(sceneId: string): void {
     try {
       this.sceneManager.getScene(sceneId);

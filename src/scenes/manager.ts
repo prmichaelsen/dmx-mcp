@@ -99,6 +99,10 @@ export class SceneManager {
     }));
   }
 
+  clear(): void {
+    this.scenes.clear();
+  }
+
   private validateFixtureIds(fixtureIds: string[]): void {
     const unknownIds: string[] = [];
     for (const fixtureId of fixtureIds) {
