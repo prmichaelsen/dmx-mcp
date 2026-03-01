@@ -38,6 +38,15 @@ import {
   handleDeleteCueList,
 } from "./cues/tools.js";
 import type { AddCueInput } from "./cues/tools.js";
+import { ShowStorage } from "./shows/storage.js";
+import {
+  handleSaveShow,
+  handleLoadShow,
+  handleListShows,
+} from "./shows/tools.js";
+import type { ShowToolDependencies } from "./shows/tools.js";
+import { EffectEngine } from "./effects/engine.js";
+import { registerBuiltInEffects } from "./effects/register.js";
 
 export function createServer() {
   const olaHost = process.env.OLA_HOST ?? "localhost";
@@ -61,6 +70,16 @@ export function createServer() {
     fadeEngine,
     cueManager,
   });
+
+  const showStorage = new ShowStorage();
+  const showDeps: ShowToolDependencies = {
+    fixtureManager,
+    sceneManager,
+    cueManager,
+    showStorage,
+  };
+  const effectEngine = new EffectEngine(olaClient, fixtureManager);
+  registerBuiltInEffects(effectEngine);
 
   const server = new McpServer({
     name: "dmx-mcp",
@@ -806,6 +825,157 @@ export function createServer() {
           },
         ],
       };
+    },
+  );
+
+  // --- Show Management Tools ---
+
+  server.tool(
+    "save_show",
+    "Save the current show state (all fixtures, scenes, and cue lists) to disk as a JSON file. The show can be loaded later to restore the complete state.",
+    {
+      id: z.string().describe("Unique show ID, used as filename (e.g. 'sunday-service')"),
+      name: z.string().describe("Human-readable show name (e.g. 'Sunday Service')"),
+    },
+    async (args) => {
+      const result = await handleSaveShow({ id: args.id, name: args.name }, showDeps);
+      return {
+        content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }],
+        isError: !result.success ? true : undefined,
+      };
+    },
+  );
+
+  server.tool(
+    "load_show",
+    "Load a previously saved show from disk, restoring all fixtures, scenes, and cue lists. WARNING: replaces all current state.",
+    {
+      id: z.string().describe("ID of the show to load (use list_shows to see available shows)"),
+    },
+    async (args) => {
+      const result = await handleLoadShow({ id: args.id }, showDeps);
+      return {
+        content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }],
+        isError: !result.success ? true : undefined,
+      };
+    },
+  );
+
+  server.tool(
+    "list_shows",
+    "List all saved shows available on disk with ID, name, and summary counts.",
+    {},
+    async () => {
+      const result = await handleListShows(showDeps);
+      return {
+        content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }],
+      };
+    },
+  );
+
+  // --- Effect Tools ---
+
+  server.tool(
+    "apply_effect",
+    "Apply a dynamic lighting effect to fixtures. Effects run continuously until stopped. Available: chase (sequential activation), rainbow (color cycling), strobe (rapid flash).",
+    {
+      type: z.enum(["chase", "rainbow", "strobe"]).describe("Effect type"),
+      fixture_ids: z.array(z.string()).describe("IDs of fixtures to apply the effect to"),
+      params: z
+        .object({
+          speed: z.number().optional().describe("Speed multiplier (default 1.0, higher = faster)"),
+          color: z
+            .object({
+              red: z.number().min(0).max(255),
+              green: z.number().min(0).max(255),
+              blue: z.number().min(0).max(255),
+            })
+            .optional()
+            .describe("RGB color for chase/strobe"),
+          rate: z.number().min(1).max(25).optional().describe("Strobe rate in Hz (1-25, default 5)"),
+          duty_cycle: z.number().min(0.1).max(0.9).optional().describe("Strobe duty cycle (0.1-0.9, default 0.5)"),
+          intensity: z.number().min(0).max(255).optional().describe("Master intensity (0-255, default 255)"),
+        })
+        .optional()
+        .describe("Optional effect parameters"),
+    },
+    async (args) => {
+      try {
+        const effectId = effectEngine.startEffect(
+          args.type,
+          args.fixture_ids,
+          {
+            speed: args.params?.speed,
+            color: args.params?.color,
+            rate: args.params?.rate,
+            dutyCycle: args.params?.duty_cycle,
+            intensity: args.params?.intensity,
+          },
+        );
+        return {
+          content: [
+            {
+              type: "text" as const,
+              text: JSON.stringify(
+                { success: true, effectId, message: `Effect "${args.type}" started on ${args.fixture_ids.length} fixture(s).` },
+                null,
+                2,
+              ),
+            },
+          ],
+        };
+      } catch (err) {
+        return {
+          content: [{ type: "text" as const, text: JSON.stringify({ success: false, message: (err as Error).message }, null, 2) }],
+          isError: true,
+        };
+      }
+    },
+  );
+
+  server.tool(
+    "stop_effect",
+    "Stop a running effect by ID, or stop all effects with all=true.",
+    {
+      effect_id: z.string().optional().describe("ID of the effect to stop (returned by apply_effect)"),
+      all: z.boolean().optional().describe("Set to true to stop all running effects"),
+    },
+    async (args) => {
+      try {
+        if (args.all === true) {
+          const count = effectEngine.getActiveEffectCount();
+          effectEngine.stopAll();
+          return {
+            content: [
+              { type: "text" as const, text: JSON.stringify({ success: true, message: `Stopped ${count} effect(s).` }, null, 2) },
+            ],
+          };
+        }
+
+        if (!args.effect_id) {
+          return {
+            content: [
+              {
+                type: "text" as const,
+                text: JSON.stringify({ success: false, message: "Provide 'effect_id' or set 'all: true'." }, null, 2),
+              },
+            ],
+            isError: true,
+          };
+        }
+
+        effectEngine.stopEffect(args.effect_id);
+        return {
+          content: [
+            { type: "text" as const, text: JSON.stringify({ success: true, message: `Effect "${args.effect_id}" stopped.` }, null, 2) },
+          ],
+        };
+      } catch (err) {
+        return {
+          content: [{ type: "text" as const, text: JSON.stringify({ success: false, message: (err as Error).message }, null, 2) }],
+          isError: true,
+        };
+      }
     },
   );
 
