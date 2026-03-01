@@ -207,7 +207,7 @@ milestones:
     document: agent/milestones/milestone-6-show-management-effects.md
     estimated_weeks: 1
     tasks_total: 6
-    tasks_completed: 2
+    tasks_completed: 3
     tasks:
       - id: 30
         title: Implement Show Storage
@@ -221,7 +221,8 @@ milestones:
         document: agent/tasks/milestone-6-show-management-effects/task-31-show-management-tools.md
       - id: 32
         title: Implement Effect Engine Base
-        status: not_started
+        status: completed
+        completed_date: 2026-03-01
         document: agent/tasks/milestone-6-show-management-effects/task-32-effect-engine-base.md
       - id: 33
         title: Implement Chase, Rainbow, Strobe Effects
