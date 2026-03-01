@@ -1,4 +1,7 @@
 import { createServer, type Server, type IncomingMessage, type ServerResponse } from "node:http";
+import { readFileSync } from "node:fs";
+import { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 
 export interface DMXFrame {
   universe: number;
@@ -175,22 +178,20 @@ export class DMXEmulatorServer {
   }
 
   private handleIndex(res: ServerResponse): void {
-    // Placeholder — Task 37 will replace this with the monitor UI
-    const universes = this.getActiveUniverses();
-    res.writeHead(200, { "Content-Type": "application/json" });
-    res.end(JSON.stringify({
-      status: "running",
-      emulator: "dmx-mcp OLA emulator",
-      universes,
-      frameCount: this.frameLog.length,
-      endpoints: {
-        "POST /set_dmx": "Set DMX channels (form-encoded: u=<universe>&d=<values>)",
-        "GET /get_dmx?u=N": "Get current DMX state for universe N",
-        "GET /events": "SSE stream of DMX updates",
-        "GET /frames": "Get recorded frame log",
-        "POST /reset": "Clear state and frame log",
-      },
-    }, null, 2));
+    try {
+      const dir = dirname(fileURLToPath(import.meta.url));
+      const html = readFileSync(join(dir, "monitor.html"), "utf-8");
+      res.writeHead(200, { "Content-Type": "text/html" });
+      res.end(html);
+    } catch {
+      // Fallback if HTML file not found (e.g. running from dist/)
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({
+        status: "running",
+        emulator: "dmx-mcp OLA emulator",
+        message: "Monitor UI not available (monitor.html not found). Use /get_dmx?u=N to read state.",
+      }, null, 2));
+    }
   }
 
   private readBody(req: IncomingMessage): Promise<string> {

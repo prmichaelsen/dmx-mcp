@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DMX Monitor — dmx-mcp</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: #1a1a2e;
+  color: #e0e0e0;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+}
+
+header {
+  background: #16213e;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #0f3460;
+}
+
+header h1 {
+  font-size: 16px;
+  color: #e94560;
+  font-weight: bold;
+}
+
+.controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.controls label {
+  font-size: 12px;
+  color: #999;
+}
+
+.universe-btn {
+  background: #0f3460;
+  border: 1px solid #1a1a5e;
+  color: #ccc;
+  padding: 4px 12px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12px;
+}
+
+.universe-btn.active {
+  background: #e94560;
+  color: #fff;
+  border-color: #e94560;
+}
+
+.toggle-btn {
+  background: #0f3460;
+  border: 1px solid #1a1a5e;
+  color: #ccc;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 11px;
+}
+
+.toggle-btn.active {
+  background: #533483;
+  border-color: #533483;
+  color: #fff;
+}
+
+.status {
+  font-size: 11px;
+  color: #666;
+}
+
+.status.connected { color: #4caf50; }
+.status.disconnected { color: #e94560; }
+
+#grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+  gap: 2px;
+  padding: 10px;
+}
+
+.channel {
+  background: #16213e;
+  padding: 4px;
+  text-align: center;
+  position: relative;
+  min-height: 48px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.channel .bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #0f3460;
+  transition: height 0.05s ease-out;
+}
+
+.channel .addr {
+  position: relative;
+  font-size: 10px;
+  color: #666;
+  z-index: 1;
+}
+
+.channel .val {
+  position: relative;
+  font-size: 14px;
+  font-weight: bold;
+  z-index: 1;
+}
+
+.channel.hot .bar { background: #e94560; }
+.channel.warm .bar { background: #533483; }
+.channel.dim .bar { background: #0f3460; }
+.channel.off { opacity: 0.3; }
+
+#frame-counter {
+  position: fixed;
+  bottom: 8px;
+  right: 12px;
+  font-size: 11px;
+  color: #444;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>DMX Monitor</h1>
+  <div class="controls">
+    <label>Universe:</label>
+    <div id="universe-buttons"></div>
+    <button class="toggle-btn" id="show-all-btn" onclick="toggleShowAll()">Show All</button>
+    <span class="status disconnected" id="status">disconnected</span>
+  </div>
+</header>
+
+<div id="grid"></div>
+<div id="frame-counter">Frames: 0</div>
+
+<script>
+const grid = document.getElementById('grid');
+const statusEl = document.getElementById('status');
+const universeBtns = document.getElementById('universe-buttons');
+const frameCounter = document.getElementById('frame-counter');
+const showAllBtn = document.getElementById('show-all-btn');
+
+let currentUniverse = 1;
+let showAll = false;
+let frameCount = 0;
+const universeData = {};
+const knownUniverses = new Set();
+
+function ensureUniverse(u) {
+  if (!universeData[u]) {
+    universeData[u] = new Array(512).fill(0);
+  }
+  if (!knownUniverses.has(u)) {
+    knownUniverses.add(u);
+    renderUniverseButtons();
+  }
+}
+
+function renderUniverseButtons() {
+  universeBtns.innerHTML = '';
+  const sorted = Array.from(knownUniverses).sort((a, b) => a - b);
+  if (sorted.length === 0) {
+    const btn = document.createElement('button');
+    btn.className = 'universe-btn active';
+    btn.textContent = '1';
+    universeBtns.appendChild(btn);
+    return;
+  }
+  for (const u of sorted) {
+    const btn = document.createElement('button');
+    btn.className = 'universe-btn' + (u === currentUniverse ? ' active' : '');
+    btn.textContent = u;
+    btn.onclick = () => selectUniverse(u);
+    universeBtns.appendChild(btn);
+  }
+}
+
+function selectUniverse(u) {
+  currentUniverse = u;
+  renderUniverseButtons();
+  renderGrid();
+}
+
+function toggleShowAll() {
+  showAll = !showAll;
+  showAllBtn.classList.toggle('active', showAll);
+  renderGrid();
+}
+
+function renderGrid() {
+  const channels = universeData[currentUniverse] || new Array(512).fill(0);
+  let html = '';
+
+  for (let i = 0; i < 512; i++) {
+    const val = channels[i];
+    if (!showAll && val === 0) continue;
+
+    const pct = (val / 255) * 100;
+    let cls = 'off';
+    if (val > 200) cls = 'hot';
+    else if (val > 100) cls = 'warm';
+    else if (val > 0) cls = 'dim';
+
+    html += '<div class="channel ' + cls + '">' +
+      '<div class="bar" style="height:' + pct + '%"></div>' +
+      '<span class="addr">' + String(i + 1).padStart(3, '0') + '</span>' +
+      '<span class="val">' + val + '</span>' +
+      '</div>';
+  }
+
+  if (html === '') {
+    html = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#555">' +
+      'No active channels. Send DMX data or click "Show All" to see all 512 channels.</div>';
+  }
+
+  grid.innerHTML = html;
+}
+
+function connectSSE() {
+  const es = new EventSource('/events');
+
+  es.addEventListener('dmx', (event) => {
+    const { universe, channels } = JSON.parse(event.data);
+    ensureUniverse(universe);
+    universeData[universe] = channels;
+    frameCount++;
+    frameCounter.textContent = 'Frames: ' + frameCount;
+    if (universe === currentUniverse) {
+      renderGrid();
+    }
+  });
+
+  es.onopen = () => {
+    statusEl.textContent = 'connected';
+    statusEl.className = 'status connected';
+  };
+
+  es.onerror = () => {
+    statusEl.textContent = 'disconnected';
+    statusEl.className = 'status disconnected';
+  };
+}
+
+// Initial render
+ensureUniverse(1);
+renderGrid();
+connectSSE();
+</script>
+
+</body>
+</html>

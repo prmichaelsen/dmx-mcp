@@ -255,7 +255,8 @@ milestones:
         document: agent/tasks/milestone-7-dmx-emulator/task-36-ola-emulator-server.md
       - id: 37
         title: Implement Browser Monitor UI
-        status: not_started
+        status: completed
+        completed_date: 2026-03-01
         document: agent/tasks/milestone-7-dmx-emulator/task-37-browser-monitor-ui.md
       - id: 38
         title: Add Emulator Integration Tests
