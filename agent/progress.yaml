@@ -203,15 +203,16 @@ milestones:
 
   - id: M6
     title: Show Management & Effects
-    status: not_started
+    status: in_progress
     document: agent/milestones/milestone-6-show-management-effects.md
     estimated_weeks: 1
     tasks_total: 6
-    tasks_completed: 0
+    tasks_completed: 1
     tasks:
       - id: 30
         title: Implement Show Storage
-        status: not_started
+        status: completed
+        completed_date: 2026-03-01
         document: agent/tasks/milestone-6-show-management-effects/task-30-show-storage.md
       - id: 31
         title: Implement Show Management Tools
