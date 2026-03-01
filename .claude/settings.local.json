@@ -14,7 +14,18 @@
       "mcp__dmx__patch_fixture",
       "mcp__dmx__list_fixtures",
       "mcp__dmx__set_fixture_color",
-      "mcp__dmx__blackout"
+      "mcp__dmx__blackout",
+      "Bash(git remote:*)",
+      "Bash(git push:*)",
+      "Bash(npm run:*)",
+      "WebFetch(domain:www.openlighting.org)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:openlighting.org)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:docs.openlighting.org)",
+      "WebFetch(domain:wiki.openlighting.org)",
+      "WebFetch(domain:open-fixture-library.org)"
     ]
   }
 }
