@@ -126,6 +126,16 @@ export function getAddressRange(
   return [startAddress, startAddress + channelCount - 1];
 }
 
+const VALID_CHANNEL_TYPES: ReadonlySet<string> = new Set([
+  "dimmer", "red", "green", "blue", "white", "amber", "uv",
+  "pan", "tilt", "pan_fine", "tilt_fine",
+  "gobo", "strobe", "speed", "macro", "control",
+]);
+
+export function isValidChannelType(type: string): type is ChannelType {
+  return VALID_CHANNEL_TYPES.has(type);
+}
+
 // Built-in profiles
 
 function ch(

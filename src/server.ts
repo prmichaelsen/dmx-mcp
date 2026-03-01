@@ -6,7 +6,9 @@ import { OLAClient } from "./ola/client.js";
 import {
   ProfileRegistry,
   initializeBuiltInProfiles,
+  isValidChannelType,
 } from "./fixtures/profiles.js";
+import type { ChannelType, ChannelDefinition, FixtureProfile } from "./types/index.js";
 import { FixtureManager } from "./fixtures/manager.js";
 import { setFixtureColor, blackout } from "./playback/live-control.js";
 
@@ -160,6 +162,99 @@ export function createServer() {
           },
         ],
       };
+    },
+  );
+
+  server.tool(
+    "create_fixture_profile",
+    "Define a custom fixture profile with channel definitions. Profiles describe the DMX channel layout of a lighting fixture.",
+    {
+      id: z.string().describe("Unique profile ID (e.g. 'chauvet-slimpar-pro')"),
+      manufacturer: z.string().describe("Manufacturer name (e.g. 'Chauvet', 'ADJ', 'Generic')"),
+      model: z.string().describe("Model name (e.g. 'SlimPAR Pro H')"),
+      channels: z
+        .array(
+          z.object({
+            name: z.string().describe("Channel name (e.g. 'red', 'dimmer')"),
+            type: z
+              .enum([
+                "dimmer", "red", "green", "blue", "white", "amber", "uv",
+                "pan", "tilt", "pan_fine", "tilt_fine",
+                "gobo", "strobe", "speed", "macro", "control",
+              ])
+              .describe("Channel type"),
+            defaultValue: z.number().min(0).max(255).optional().describe("Default DMX value (0-255). Defaults to 0."),
+          }),
+        )
+        .min(1)
+        .describe("Ordered list of DMX channel definitions"),
+    },
+    async (args) => {
+      try {
+        if (profileRegistry.has(args.id)) {
+          return {
+            content: [{ type: "text" as const, text: `Error: Profile "${args.id}" already exists` }],
+            isError: true,
+          };
+        }
+
+        const channels: ChannelDefinition[] = args.channels.map((ch) => ({
+          name: ch.name,
+          type: ch.type as ChannelType,
+          defaultValue: ch.defaultValue ?? 0,
+          min: 0,
+          max: 255,
+        }));
+
+        const channelNames = channels.map((c) => c.name);
+
+        const profile: FixtureProfile = {
+          id: args.id,
+          manufacturer: args.manufacturer,
+          model: args.model,
+          channels,
+          modes: [
+            {
+              name: "default",
+              channelCount: channels.length,
+              channels: channelNames,
+            },
+          ],
+        };
+
+        profileRegistry.register(profile);
+
+        return {
+          content: [
+            {
+              type: "text" as const,
+              text: JSON.stringify(
+                {
+                  success: true,
+                  profile: {
+                    id: profile.id,
+                    manufacturer: profile.manufacturer,
+                    model: profile.model,
+                    channelCount: profile.channels.length,
+                    channels: profile.channels.map((ch, i) => ({
+                      offset: i,
+                      name: ch.name,
+                      type: ch.type,
+                    })),
+                  },
+                },
+                null,
+                2,
+              ),
+            },
+          ],
+        };
+      } catch (err) {
+        return {
+          content: [{ type: "text" as const, text: `Error: ${(err as Error).message}` }],
+          isError: true,
+        };
+      }
     },
   );
 

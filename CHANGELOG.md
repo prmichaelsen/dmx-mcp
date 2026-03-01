@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.0] - 2026-03-01
+
+### Added
+- `create_fixture_profile` MCP tool for defining custom fixture profiles
+- `isValidChannelType()` utility for channel type validation
+- `start` script (`node dist/index.js`) for running production build
+- Fixture profile unit tests (42 tests): validation, channel utilities, built-in profiles, registry
+- Fixture manager unit tests (22 tests): patching, collision detection, unpatching, listing
+- `dev` script now uses `tsx watch` for hot-reloading
+
 ## [0.1.0] - 2026-03-01
 
 ### Added
