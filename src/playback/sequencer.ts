@@ -73,7 +73,8 @@ export class CueSequencer {
     this.currentCueIndex = 0;
     this.isPlaying = true;
 
-    await this.executeCueAtIndex(0);
+    // Fire-and-forget — cue execution (fade + hold + auto-advance) runs in background
+    this.executeCueAtIndex(0).catch(() => {});
   }
 
   async goCue(): Promise<void> {
@@ -88,13 +89,13 @@ export class CueSequencer {
     if (nextIndex >= this.activeCueList.cues.length) {
       if (this.activeCueList.loop) {
         this.isPlaying = true;
-        await this.executeCueAtIndex(0);
+        this.executeCueAtIndex(0).catch(() => {});
       } else {
         this.isPlaying = false;
       }
     } else {
       this.isPlaying = true;
-      await this.executeCueAtIndex(nextIndex);
+      this.executeCueAtIndex(nextIndex).catch(() => {});
     }
   }
 
@@ -115,7 +116,7 @@ export class CueSequencer {
     this.cancelActive();
 
     this.isPlaying = true;
-    await this.executeCueAtIndex(index);
+    this.executeCueAtIndex(index).catch(() => {});
   }
 
   stop(): void {

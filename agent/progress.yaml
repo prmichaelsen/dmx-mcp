@@ -164,11 +164,11 @@ milestones:
 
   - id: M5
     title: Playback & Live Control
-    status: in_progress
+    status: completed
     document: agent/milestones/milestone-5-playback-live-control.md
     estimated_weeks: 1
     tasks_total: 6
-    tasks_completed: 5
+    tasks_completed: 6
     tasks:
       - id: 24
         title: Implement Cue Sequencer
@@ -197,7 +197,8 @@ milestones:
         document: agent/tasks/milestone-5-playback-live-control/task-28-get-dmx-state-tool.md
       - id: 29
         title: Register Playback MCP Tools and Tests
-        status: not_started
+        status: completed
+        completed_date: 2026-03-01
         document: agent/tasks/milestone-5-playback-live-control/task-29-register-playback-tools-tests.md
 
   - id: M6
@@ -241,10 +242,19 @@ documentation:
 
 progress:
   planning: 100
-  implementation: 71
-  overall: 80
+  implementation: 83
+  overall: 89
 
 recent_work:
+  - date: 2026-03-01
+    description: |
+      Completed M5: Playback & Live Control. CueSequencer with fire-and-forget playback,
+      set_fixture_dimmer, get_dmx_state, and 5 new playback MCP tools. Server now exposes 23 tools total.
+    items:
+      - "✅ M5 complete (6/6 tasks): CueSequencer, dimmer control, DMX state, MCP registration, tests"
+      - "✅ 195 tests passing across 9 test files"
+      - "✅ 23 MCP tools registered"
+      - "✅ Version bumped to 0.5.0"
   - date: 2026-03-01
     description: |
       Completed M4: Cue Management & Fade Engine. Full cue list CRUD, cue operations,
@@ -277,7 +287,6 @@ recent_work:
       - ✅ M5 partial (2/6 tasks): set_fixture_color and blackout implemented
 
 next_steps:
-  - "Complete remaining M5 tasks (cue sequencer, set_fixture_dimmer, get_dmx_state, register tools)"
   - "Complete M6 (Show Management & Effects) for persistence and effects"
 
 notes:

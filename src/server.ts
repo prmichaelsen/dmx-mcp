@@ -10,7 +10,15 @@ import {
 } from "./fixtures/profiles.js";
 import type { ChannelType, ChannelDefinition, FixtureProfile } from "./types/index.js";
 import { FixtureManager } from "./fixtures/manager.js";
-import { setFixtureColor, blackout } from "./playback/live-control.js";
+import {
+  setFixtureColor,
+  setFixtureDimmer,
+  getDMXState,
+  formatDMXStateResult,
+  blackout,
+} from "./playback/live-control.js";
+import { FadeEngine } from "./cues/fade-engine.js";
+import { CueSequencer } from "./playback/sequencer.js";
 import { SceneManager } from "./scenes/manager.js";
 import {
   handlePreviewScene,
@@ -45,6 +53,14 @@ export function createServer() {
   const fixtureManager = new FixtureManager(profileRegistry);
   const sceneManager = new SceneManager(fixtureManager);
   const cueManager = new CueManager(sceneManager);
+  const fadeEngine = new FadeEngine();
+  const sequencer = new CueSequencer({
+    olaClient,
+    sceneManager,
+    fixtureManager,
+    fadeEngine,
+    cueManager,
+  });
 
   const server = new McpServer({
     name: "dmx-mcp",
@@ -639,6 +655,157 @@ export function createServer() {
           isError: true,
         };
       }
+    },
+  );
+
+  // --- Playback / Sequencer Tools ---
+
+  server.tool(
+    "set_fixture_dimmer",
+    "Set a fixture's dimmer intensity. Level is 0-255 (absolute) or 0.0-1.0 with unit='percent'. Requires a dedicated dimmer channel. For RGB-only fixtures, use set_fixture_color to control brightness.",
+    {
+      fixtureId: z.string().describe("ID of the patched fixture"),
+      level: z.number().describe("Dimmer level. 0-255 for absolute, 0.0-1.0 for percent mode."),
+      unit: z
+        .enum(["absolute", "percent"])
+        .optional()
+        .describe("Unit for the level value. Default: 'absolute' (0-255)."),
+    },
+    async (args) => {
+      try {
+        const result = await setFixtureDimmer(
+          { fixtureId: args.fixtureId, level: args.level, unit: args.unit },
+          fixtureManager,
+          olaClient,
+        );
+        return {
+          content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }],
+          isError: !result.success ? true : undefined,
+        };
+      } catch (err) {
+        return {
+          content: [{ type: "text" as const, text: `Error: ${(err as Error).message}` }],
+          isError: true,
+        };
+      }
+    },
+  );
+
+  server.tool(
+    "get_dmx_state",
+    "Read current DMX output values from OLA for a given universe. Returns all 512 channel values. Optionally provide a fixtureId to get labeled channel values (e.g., red=255, green=128).",
+    {
+      universe: z.number().describe("DMX universe number to read (1-based)"),
+      fixtureId: z
+        .string()
+        .optional()
+        .describe("Optional fixture ID to extract and label channels for."),
+    },
+    async (args) => {
+      try {
+        const result = await getDMXState(
+          { universe: args.universe, fixtureId: args.fixtureId },
+          olaClient,
+          fixtureManager,
+        );
+        const text = formatDMXStateResult(result);
+        return {
+          content: [{ type: "text" as const, text }],
+          isError: !result.success ? true : undefined,
+        };
+      } catch (err) {
+        return {
+          content: [{ type: "text" as const, text: `Error: ${(err as Error).message}` }],
+          isError: true,
+        };
+      }
+    },
+  );
+
+  server.tool(
+    "go_cue",
+    "Advance to the next cue in the active cue list, or start a new cue list by providing cue_list_id. If the list loops and you are at the last cue, wraps to the first.",
+    {
+      cue_list_id: z
+        .string()
+        .optional()
+        .describe("ID of the cue list to start. On subsequent calls, omit to advance the active list."),
+    },
+    async (args) => {
+      try {
+        if (args.cue_list_id) {
+          await sequencer.start(args.cue_list_id);
+        } else {
+          await sequencer.goCue();
+        }
+        const state = sequencer.getState();
+        return {
+          content: [
+            {
+              type: "text" as const,
+              text: JSON.stringify(
+                { success: true, action: args.cue_list_id ? "started" : "advanced", ...state },
+                null,
+                2,
+              ),
+            },
+          ],
+        };
+      } catch (err) {
+        return {
+          content: [{ type: "text" as const, text: `Error: ${(err as Error).message}` }],
+          isError: true,
+        };
+      }
+    },
+  );
+
+  server.tool(
+    "go_to_cue",
+    "Jump to a specific cue by ID within the active cue list. Cancels any in-progress fade and immediately starts the target cue.",
+    {
+      cue_id: z.string().describe("ID of the cue to jump to within the active cue list"),
+    },
+    async (args) => {
+      try {
+        await sequencer.goToCue(args.cue_id);
+        const state = sequencer.getState();
+        return {
+          content: [
+            {
+              type: "text" as const,
+              text: JSON.stringify(
+                { success: true, action: "jumped", targetCueId: args.cue_id, ...state },
+                null,
+                2,
+              ),
+            },
+          ],
+        };
+      } catch (err) {
+        return {
+          content: [{ type: "text" as const, text: `Error: ${(err as Error).message}` }],
+          isError: true,
+        };
+      }
+    },
+  );
+
+  server.tool(
+    "stop_playback",
+    "Stop cue list playback. Cancels any active fade and holds the current DMX state. Lights remain at their current values.",
+    {},
+    async () => {
+      sequencer.stop();
+      const state = sequencer.getState();
+      return {
+        content: [
+          {
+            type: "text" as const,
+            text: JSON.stringify({ success: true, action: "stopped", ...state }, null, 2),
+          },
+        ],
+      };
     },
   );
 

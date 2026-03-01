@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.0] - 2026-03-01
+
+### Added
+- `CueSequencer` class with fire-and-forget playback, auto-advance, looping, and AbortController cancellation
+- `setFixtureDimmer` function with absolute (0-255) and percent (0.0-1.0) modes, clamping, and RGB-only fixture hints
+- `getDMXState` function for reading DMX state from OLA with optional fixture channel labeling
+- `formatDMXStateResult` for human-readable DMX state output
+- 5 new playback MCP tools: `set_fixture_dimmer`, `get_dmx_state`, `go_cue`, `go_to_cue`, `stop_playback`
+- Sequencer unit tests (15 tests): start, goCue, goToCue, stop, getState, looping
+- Live control unit tests (20 tests): dimmer control, DMX state, formatting
+
 ## [0.4.0] - 2026-03-01
 
 ### Added
