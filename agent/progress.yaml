@@ -95,7 +95,7 @@ milestones:
     document: agent/milestones/milestone-3-scene-programming.md
     estimated_weeks: 1
     tasks_total: 5
-    tasks_completed: 2
+    tasks_completed: 3
     tasks:
       - id: 13
         title: Implement Scene Manager
@@ -109,7 +109,8 @@ milestones:
         document: agent/tasks/milestone-3-scene-programming/task-14-scene-dmx-mapping.md
       - id: 15
         title: Implement preview_scene Tool
-        status: not_started
+        status: completed
+        completed_date: 2026-03-01
         document: agent/tasks/milestone-3-scene-programming/task-15-preview-scene-tool.md
       - id: 16
         title: Register Scene MCP Tools
