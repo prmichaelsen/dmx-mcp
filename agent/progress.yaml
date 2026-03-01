@@ -246,7 +246,7 @@ milestones:
     document: agent/milestones/milestone-7-dmx-emulator.md
     estimated_weeks: 0.5
     tasks_total: 4
-    tasks_completed: 0
+    tasks_completed: 3
     tasks:
       - id: 36
         title: Implement OLA Emulator Server
@@ -260,7 +260,8 @@ milestones:
         document: agent/tasks/milestone-7-dmx-emulator/task-37-browser-monitor-ui.md
       - id: 38
         title: Add Emulator Integration Tests
-        status: not_started
+        status: completed
+        completed_date: 2026-03-01
         document: agent/tasks/milestone-7-dmx-emulator/task-38-emulator-integration-tests.md
       - id: 39
         title: Add Dev Scripts and Documentation
