@@ -1,0 +1,55 @@
+project:
+  name: lightkey-mcp
+  version: 0.1.0
+  type: mcp-server
+  started: 2026-03-01
+  status: in_progress
+  description: |
+    MCP server for programming and controlling DMX lighting shows via OLA.
+    Provides high-level abstractions (fixtures, scenes, cues, effects) as MCP tools,
+    translating agent commands to raw DMX values sent through OLA's REST API
+    to an Enttec USB DMX adapter.
+
+milestones: []
+
+tasks: {}
+
+documentation:
+  design_documents: 1
+  milestone_documents: 0
+  pattern_documents: 0
+  task_documents: 0
+
+progress:
+  planning: 10
+  implementation: 0
+  overall: 5
+
+recent_work:
+  - date: 2026-03-01
+    description: |
+      Project created from design document (local.dmx-lighting-mcp.md).
+    items:
+      - ✅ Created design document with full architecture
+      - ✅ Defined data models (Fixture, Scene, Cue, CueList, Show)
+      - ✅ Designed 25+ MCP tools across 6 categories
+      - ✅ Documented OLA REST integration
+      - ✅ Designed fade engine with interpolation
+      - ✅ Created ACP project with full installation
+      - 📋 Next: Plan milestones and tasks with @acp.plan
+
+next_steps:
+  - Plan milestones and tasks with @acp.plan
+  - Set up TypeScript project (package.json, tsconfig, esbuild)
+  - Install MCP SDK and implement server scaffold
+  - Implement OLA REST client
+  - Build fixture management tools
+  - Build scene programming tools
+
+notes:
+  - Hardware: Enttec USB-C DMX adapter (OLA-native support)
+  - Backend: OLA REST API on localhost:9090
+  - Transport: DMX512 via Enttec
+  - Design doc: agent/design/local.dmx-lighting-mcp.md
+
+current_blockers: []
