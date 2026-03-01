@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.0] - 2026-03-01
+
+### Added
+- `CueManager` class with cue list CRUD and cue operations (add, remove, reorder)
+- Scene reference validation for cues (ensures referenced scenes exist)
+- Cue timing validation (non-negative, finite values for fadeIn, hold, fadeOut)
+- `FadeEngine` with linear interpolation at ~40fps, AbortSignal cancellation support
+- 6 cue MCP tools: `create_cue_list`, `add_cue`, `remove_cue`, `reorder_cues`, `list_cue_lists`, `delete_cue_list`
+- CueManager unit tests (33 tests): CRUD, validation, reordering
+- FadeEngine unit tests (17 tests): interpolation, instant snap, cancellation, channel arrays
+
 ## [0.3.0] - 2026-03-01
 
 ### Added

@@ -125,11 +125,11 @@ milestones:
 
   - id: M4
     title: Cue Management & Fade Engine
-    status: in_progress
+    status: completed
     document: agent/milestones/milestone-4-cue-management-fade-engine.md
     estimated_weeks: 1.5
     tasks_total: 6
-    tasks_completed: 5
+    tasks_completed: 6
     tasks:
       - id: 18
         title: Implement CueList and Cue Data Management
@@ -158,7 +158,8 @@ milestones:
         document: agent/tasks/milestone-4-cue-management-fade-engine/task-22-register-cue-mcp-tools.md
       - id: 23
         title: Add Cue and Fade Engine Tests
-        status: not_started
+        status: completed
+        completed_date: 2026-03-01
         document: agent/tasks/milestone-4-cue-management-fade-engine/task-23-cue-fade-engine-tests.md
 
   - id: M5
@@ -237,10 +238,19 @@ documentation:
 
 progress:
   planning: 100
-  implementation: 55
-  overall: 65
+  implementation: 71
+  overall: 80
 
 recent_work:
+  - date: 2026-03-01
+    description: |
+      Completed M4: Cue Management & Fade Engine. Full cue list CRUD, cue operations,
+      FadeEngine with interpolation, and 6 cue MCP tools. Server now exposes 18 tools total.
+    items:
+      - ✅ M4 complete (6/6 tasks): CueManager, FadeEngine, cue tools, MCP registration, tests
+      - ✅ 160 tests passing across 7 test files
+      - ✅ 18 MCP tools registered
+      - ✅ Version bumped to 0.4.0
   - date: 2026-03-01
     description: |
       Completed M3: Scene Programming. Full scene CRUD, DMX channel mapping,
@@ -264,8 +274,7 @@ recent_work:
       - ✅ M5 partial (2/6 tasks): set_fixture_color and blackout implemented
 
 next_steps:
-  - "Complete M4 (Cue Management & Fade Engine) for cue lists and fading"
-  - "Complete remaining M5 tasks (set_fixture_dimmer, get_dmx_state, cue sequencer)"
+  - "Complete remaining M5 tasks (cue sequencer, set_fixture_dimmer, get_dmx_state, register tools)"
   - "Complete M6 (Show Management & Effects) for persistence and effects"
 
 notes:
