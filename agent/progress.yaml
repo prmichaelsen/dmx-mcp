@@ -10,22 +10,231 @@ project:
     translating agent commands to raw DMX values sent through OLA's REST API
     to an Enttec USB DMX adapter.
 
-milestones: []
+milestones:
+  - id: M1
+    title: Project Foundation & OLA Client
+    status: not_started
+    document: agent/milestones/milestone-1-project-foundation.md
+    estimated_weeks: 1
+    tasks_total: 6
+    tasks_completed: 0
+    tasks:
+      - id: 1
+        title: Initialize TypeScript Project
+        status: not_started
+        document: agent/tasks/milestone-1-project-foundation/task-1-initialize-typescript-project.md
+      - id: 2
+        title: Set Up MCP Server Scaffold
+        status: not_started
+        document: agent/tasks/milestone-1-project-foundation/task-2-mcp-server-scaffold.md
+      - id: 3
+        title: Define Core TypeScript Interfaces
+        status: not_started
+        document: agent/tasks/milestone-1-project-foundation/task-3-core-typescript-interfaces.md
+      - id: 4
+        title: Implement OLA REST Client
+        status: not_started
+        document: agent/tasks/milestone-1-project-foundation/task-4-ola-rest-client.md
+      - id: 5
+        title: Add OLA Client Unit Tests
+        status: not_started
+        document: agent/tasks/milestone-1-project-foundation/task-5-ola-client-tests.md
+      - id: 6
+        title: Add Development Scripts
+        status: not_started
+        document: agent/tasks/milestone-1-project-foundation/task-6-development-scripts.md
 
-tasks: {}
+  - id: M2
+    title: Fixture Management
+    status: not_started
+    document: agent/milestones/milestone-2-fixture-management.md
+    estimated_weeks: 1
+    tasks_total: 6
+    tasks_completed: 0
+    tasks:
+      - id: 7
+        title: Implement Fixture Profile Models
+        status: not_started
+        document: agent/tasks/milestone-2-fixture-management/task-7-fixture-profile-models.md
+      - id: 8
+        title: Implement Fixture Manager
+        status: not_started
+        document: agent/tasks/milestone-2-fixture-management/task-8-fixture-manager.md
+      - id: 9
+        title: Implement create_fixture_profile Tool
+        status: not_started
+        document: agent/tasks/milestone-2-fixture-management/task-9-create-fixture-profile-tool.md
+      - id: 10
+        title: Register Fixture MCP Tools
+        status: not_started
+        document: agent/tasks/milestone-2-fixture-management/task-10-register-fixture-mcp-tools.md
+      - id: 11
+        title: Add Built-in Fixture Profiles
+        status: not_started
+        document: agent/tasks/milestone-2-fixture-management/task-11-built-in-fixture-profiles.md
+      - id: 12
+        title: Add Fixture Management Tests
+        status: not_started
+        document: agent/tasks/milestone-2-fixture-management/task-12-fixture-management-tests.md
+
+  - id: M3
+    title: Scene Programming
+    status: not_started
+    document: agent/milestones/milestone-3-scene-programming.md
+    estimated_weeks: 1
+    tasks_total: 5
+    tasks_completed: 0
+    tasks:
+      - id: 13
+        title: Implement Scene Manager
+        status: not_started
+        document: agent/tasks/milestone-3-scene-programming/task-13-scene-manager.md
+      - id: 14
+        title: Implement Scene-to-DMX Channel Mapping
+        status: not_started
+        document: agent/tasks/milestone-3-scene-programming/task-14-scene-dmx-mapping.md
+      - id: 15
+        title: Implement preview_scene Tool
+        status: not_started
+        document: agent/tasks/milestone-3-scene-programming/task-15-preview-scene-tool.md
+      - id: 16
+        title: Register Scene MCP Tools
+        status: not_started
+        document: agent/tasks/milestone-3-scene-programming/task-16-register-scene-mcp-tools.md
+      - id: 17
+        title: Add Scene Programming Tests
+        status: not_started
+        document: agent/tasks/milestone-3-scene-programming/task-17-scene-programming-tests.md
+
+  - id: M4
+    title: Cue Management & Fade Engine
+    status: not_started
+    document: agent/milestones/milestone-4-cue-management-fade-engine.md
+    estimated_weeks: 1.5
+    tasks_total: 6
+    tasks_completed: 0
+    tasks:
+      - id: 18
+        title: Implement CueList and Cue Data Management
+        status: not_started
+        document: agent/tasks/milestone-4-cue-management-fade-engine/task-18-cue-data-management.md
+      - id: 19
+        title: Implement Fade Engine
+        status: not_started
+        document: agent/tasks/milestone-4-cue-management-fade-engine/task-19-fade-engine.md
+      - id: 20
+        title: Implement Cue Management Tools
+        status: not_started
+        document: agent/tasks/milestone-4-cue-management-fade-engine/task-20-cue-management-tools.md
+      - id: 21
+        title: Implement reorder_cues Tool
+        status: not_started
+        document: agent/tasks/milestone-4-cue-management-fade-engine/task-21-reorder-cues-tool.md
+      - id: 22
+        title: Register Cue MCP Tools
+        status: not_started
+        document: agent/tasks/milestone-4-cue-management-fade-engine/task-22-register-cue-mcp-tools.md
+      - id: 23
+        title: Add Cue and Fade Engine Tests
+        status: not_started
+        document: agent/tasks/milestone-4-cue-management-fade-engine/task-23-cue-fade-engine-tests.md
+
+  - id: M5
+    title: Playback & Live Control
+    status: not_started
+    document: agent/milestones/milestone-5-playback-live-control.md
+    estimated_weeks: 1
+    tasks_total: 6
+    tasks_completed: 0
+    tasks:
+      - id: 24
+        title: Implement Cue Sequencer
+        status: not_started
+        document: agent/tasks/milestone-5-playback-live-control/task-24-cue-sequencer.md
+      - id: 25
+        title: Implement Blackout Tool
+        status: not_started
+        document: agent/tasks/milestone-5-playback-live-control/task-25-blackout-tool.md
+      - id: 26
+        title: Implement set_fixture_color Tool
+        status: not_started
+        document: agent/tasks/milestone-5-playback-live-control/task-26-set-fixture-color-tool.md
+      - id: 27
+        title: Implement set_fixture_dimmer Tool
+        status: not_started
+        document: agent/tasks/milestone-5-playback-live-control/task-27-set-fixture-dimmer-tool.md
+      - id: 28
+        title: Implement get_dmx_state Tool
+        status: not_started
+        document: agent/tasks/milestone-5-playback-live-control/task-28-get-dmx-state-tool.md
+      - id: 29
+        title: Register Playback MCP Tools and Tests
+        status: not_started
+        document: agent/tasks/milestone-5-playback-live-control/task-29-register-playback-tools-tests.md
+
+  - id: M6
+    title: Show Management & Effects
+    status: not_started
+    document: agent/milestones/milestone-6-show-management-effects.md
+    estimated_weeks: 1
+    tasks_total: 6
+    tasks_completed: 0
+    tasks:
+      - id: 30
+        title: Implement Show Storage
+        status: not_started
+        document: agent/tasks/milestone-6-show-management-effects/task-30-show-storage.md
+      - id: 31
+        title: Implement Show Management Tools
+        status: not_started
+        document: agent/tasks/milestone-6-show-management-effects/task-31-show-management-tools.md
+      - id: 32
+        title: Implement Effect Engine Base
+        status: not_started
+        document: agent/tasks/milestone-6-show-management-effects/task-32-effect-engine-base.md
+      - id: 33
+        title: Implement Chase, Rainbow, Strobe Effects
+        status: not_started
+        document: agent/tasks/milestone-6-show-management-effects/task-33-chase-rainbow-strobe-effects.md
+      - id: 34
+        title: Register Show and Effect MCP Tools
+        status: not_started
+        document: agent/tasks/milestone-6-show-management-effects/task-34-register-show-effect-mcp-tools.md
+      - id: 35
+        title: End-to-End Integration Tests
+        status: not_started
+        document: agent/tasks/milestone-6-show-management-effects/task-35-end-to-end-tests.md
 
 documentation:
-  design_documents: 1
-  milestone_documents: 0
+  design_documents: 3
+  milestone_documents: 6
   pattern_documents: 0
-  task_documents: 0
+  task_documents: 35
 
 progress:
-  planning: 10
+  planning: 100
   implementation: 0
-  overall: 5
+  overall: 15
 
 recent_work:
+  - date: 2026-03-01
+    description: |
+      Planned all milestones and tasks via @acp-plan from design document.
+    items:
+      - ✅ Created 6 milestone documents (M1-M6)
+      - ✅ Created 35 task documents across all milestones
+      - ✅ Created OLA hardware setup design document
+      - ✅ Updated progress.yaml with full project roadmap
+      - 📋 Next: Start M1 Task 1 with @acp-proceed
+  - date: 2026-03-01
+    description: |
+      Agent context initialized via @acp-init. Full documentation review completed.
+    items:
+      - ✅ Initialized agent context
+      - ✅ Reviewed design document (local.dmx-lighting-mcp.md)
+      - ✅ Confirmed no source code exists yet — project is in planning phase
+      - ✅ No documentation drift detected
+      - 📋 Next: Plan milestones and tasks with @acp-plan
   - date: 2026-03-01
     description: |
       Project created from design document (local.dmx-lighting-mcp.md).
@@ -39,17 +248,17 @@ recent_work:
       - 📋 Next: Plan milestones and tasks with @acp.plan
 
 next_steps:
-  - Plan milestones and tasks with @acp.plan
-  - Set up TypeScript project (package.json, tsconfig, esbuild)
-  - Install MCP SDK and implement server scaffold
-  - Implement OLA REST client
-  - Build fixture management tools
-  - Build scene programming tools
+  - "Start M1: Run @acp-proceed to begin Task 1 (Initialize TypeScript Project)"
+  - "Set up OLA: Follow agent/design/local.ola-hardware-setup.md for hardware prep"
+  - Complete M1 (6 tasks) to establish project foundation
+  - Complete M2 (6 tasks) for fixture management tools
+  - Complete M3-M6 for full feature set
 
 notes:
   - Hardware: Enttec USB-C DMX adapter (OLA-native support)
   - Backend: OLA REST API on localhost:9090
   - Transport: DMX512 via Enttec
-  - Design doc: agent/design/local.dmx-lighting-mcp.md
+  - Design docs: agent/design/local.dmx-lighting-mcp.md, agent/design/local.ola-hardware-setup-linux.md, agent/design/local.ola-hardware-setup-macos.md
+  - Total estimated duration: ~6.5 weeks across 6 milestones
 
 current_blockers: []
