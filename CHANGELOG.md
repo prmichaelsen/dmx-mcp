@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.0] - 2026-03-01
+
+### Added
+- `SceneManager` class with full CRUD operations for scenes (create, update, delete, get, list)
+- Scene fixture state validation against patched fixtures
+- Channel value range validation (0-255 integers)
+- Scene-to-DMX channel mapping (`sceneToDMX`) for converting scenes to raw DMX arrays
+- `preview_scene` MCP tool for live DMX output through OLA
+- 5 scene MCP tools: `create_scene`, `update_scene`, `delete_scene`, `list_scenes`, `preview_scene`
+- Scene manager unit tests and DMX mapper unit tests
+
 ## [0.2.0] - 2026-03-01
 
 ### Added

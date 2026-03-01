@@ -1,6 +1,6 @@
 {
   "name": "dmx-mcp",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "type": "module",
   "description": "MCP server for DMX lighting control via OLA",
   "main": "dist/index.js",

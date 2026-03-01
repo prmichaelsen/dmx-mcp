@@ -91,15 +91,16 @@ milestones:
 
   - id: M3
     title: Scene Programming
-    status: not_started
+    status: in_progress
     document: agent/milestones/milestone-3-scene-programming.md
     estimated_weeks: 1
     tasks_total: 5
-    tasks_completed: 0
+    tasks_completed: 1
     tasks:
       - id: 13
         title: Implement Scene Manager
-        status: not_started
+        status: completed
+        completed_date: 2026-03-01
         document: agent/tasks/milestone-3-scene-programming/task-13-scene-manager.md
       - id: 14
         title: Implement Scene-to-DMX Channel Mapping
