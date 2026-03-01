@@ -189,6 +189,157 @@ export async function setFixtureDimmer(
   };
 }
 
+export interface GetDMXStateParams {
+  universe: number;
+  fixtureId?: string;
+}
+
+export interface FixtureChannelState {
+  name: string;
+  type: string;
+  dmxAddress: number;
+  value: number;
+}
+
+export interface GetDMXStateResult {
+  success: boolean;
+  universe: number;
+  channels?: number[];
+  fixtureState?: {
+    fixtureId: string;
+    fixtureName: string;
+    profile: string;
+    startAddress: number;
+    channels: FixtureChannelState[];
+  };
+  activeChannelCount?: number;
+  error?: string;
+}
+
+export async function getDMXState(
+  params: GetDMXStateParams,
+  olaClient: OLAClient,
+  fixtureManager?: FixtureManager,
+): Promise<GetDMXStateResult> {
+  if (!Number.isInteger(params.universe) || params.universe < 1) {
+    return {
+      success: false,
+      universe: params.universe,
+      error: `Universe must be a positive integer, got ${params.universe}`,
+    };
+  }
+
+  let rawChannels: number[];
+  try {
+    rawChannels = await olaClient.getDMX(params.universe);
+  } catch (error) {
+    return {
+      success: false,
+      universe: params.universe,
+      error: `Failed to read DMX from OLA: ${error instanceof Error ? error.message : String(error)}`,
+    };
+  }
+
+  // Pad to 512
+  while (rawChannels.length < 512) {
+    rawChannels.push(0);
+  }
+  if (rawChannels.length > 512) {
+    rawChannels = rawChannels.slice(0, 512);
+  }
+
+  const activeChannelCount = rawChannels.filter((v) => v !== 0).length;
+
+  const result: GetDMXStateResult = {
+    success: true,
+    universe: params.universe,
+    channels: rawChannels,
+    activeChannelCount,
+  };
+
+  // If a fixtureId was provided, extract and label its channels
+  if (params.fixtureId && fixtureManager) {
+    const fixture = fixtureManager.getFixture(params.fixtureId);
+
+    if (!fixture) {
+      result.error = `Fixture "${params.fixtureId}" not found. Returning raw universe data only.`;
+    } else if (fixture.universe !== params.universe) {
+      result.error =
+        `Fixture "${params.fixtureId}" is on universe ${fixture.universe}, ` +
+        `but you requested universe ${params.universe}. ` +
+        `Returning raw universe data only.`;
+    } else {
+      const fixtureChannels: FixtureChannelState[] = [];
+
+      for (let i = 0; i < fixture.profile.channels.length; i++) {
+        const channelDef = fixture.profile.channels[i];
+        const dmxAddress = fixture.startAddress + i;
+        const arrayIndex = dmxAddress - 1;
+
+        fixtureChannels.push({
+          name: channelDef.name,
+          type: channelDef.type,
+          dmxAddress,
+          value:
+            arrayIndex >= 0 && arrayIndex < 512 ? rawChannels[arrayIndex] : 0,
+        });
+      }
+
+      result.fixtureState = {
+        fixtureId: fixture.id,
+        fixtureName: fixture.name,
+        profile: `${fixture.profile.manufacturer} ${fixture.profile.model}`,
+        startAddress: fixture.startAddress,
+        channels: fixtureChannels,
+      };
+    }
+  }
+
+  return result;
+}
+
+export function formatDMXStateResult(result: GetDMXStateResult): string {
+  if (!result.success) {
+    return `Error reading DMX state: ${result.error}`;
+  }
+
+  const lines: string[] = [];
+
+  lines.push(`DMX Universe ${result.universe}`);
+  lines.push(`Active channels: ${result.activeChannelCount} of 512`);
+
+  if (result.fixtureState) {
+    const fs = result.fixtureState;
+    lines.push("");
+    lines.push(`Fixture: ${fs.fixtureName} (${fs.fixtureId})`);
+    lines.push(`Profile: ${fs.profile}`);
+    lines.push(`Start address: ${fs.startAddress}`);
+    lines.push("Channels:");
+
+    for (const ch of fs.channels) {
+      lines.push(`  ${ch.name} (${ch.type}): ${ch.value} [DMX ${ch.dmxAddress}]`);
+    }
+  }
+
+  if (result.channels && result.activeChannelCount! > 0) {
+    lines.push("");
+    lines.push("Non-zero channels:");
+
+    for (let i = 0; i < result.channels.length; i++) {
+      if (result.channels[i] !== 0) {
+        lines.push(`  DMX ${i + 1}: ${result.channels[i]}`);
+      }
+    }
+  }
+
+  if (result.error) {
+    lines.push("");
+    lines.push(`Note: ${result.error}`);
+  }
+
+  return lines.join("\n");
+}
+
 export async function blackout(
   fixtureManager: FixtureManager,
   olaClient: OLAClient,
