@@ -20,6 +20,16 @@ import {
   handleListScenes,
   formatPreviewResult,
 } from "./scenes/tools.js";
+import { CueManager } from "./cues/manager.js";
+import {
+  handleCreateCueList,
+  handleAddCue,
+  handleRemoveCue,
+  handleReorderCues,
+  handleListCueLists,
+  handleDeleteCueList,
+} from "./cues/tools.js";
+import type { AddCueInput } from "./cues/tools.js";
 
 export function createServer() {
   const olaHost = process.env.OLA_HOST ?? "localhost";
@@ -34,6 +44,7 @@ export function createServer() {
 
   const fixtureManager = new FixtureManager(profileRegistry);
   const sceneManager = new SceneManager(fixtureManager);
+  const cueManager = new CueManager(sceneManager);
 
   const server = new McpServer({
     name: "dmx-mcp",
@@ -488,6 +499,143 @@ export function createServer() {
           content: [
             { type: "text" as const, text: `Error: ${(err as Error).message}` },
           ],
+          isError: true,
+        };
+      }
+    },
+  );
+
+  // --- Cue Management Tools ---
+
+  server.tool(
+    "create_cue_list",
+    "Create a new cue list for sequencing lighting scenes. A cue list contains an ordered sequence of cues, each referencing a scene with timing parameters.",
+    {
+      id: z.string().describe("Unique cue list ID (e.g. 'main-show', 'intro-sequence')"),
+      name: z.string().describe("Human-readable name (e.g. 'Main Show', 'Intro Sequence')"),
+      loop: z.boolean().optional().describe("Whether the cue list loops after the last cue (default: false)"),
+    },
+    async (args) => {
+      try {
+        const result = handleCreateCueList(args.id, args.name, args.loop, cueManager);
+        return {
+          content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }],
+        };
+      } catch (err) {
+        return {
+          content: [{ type: "text" as const, text: `Error: ${(err as Error).message}` }],
+          isError: true,
+        };
+      }
+    },
+  );
+
+  server.tool(
+    "add_cue",
+    "Add a cue to a cue list. A cue references a scene and specifies fade-in, hold, and fade-out timing in milliseconds.",
+    {
+      cue_list_id: z.string().describe("ID of the cue list to add the cue to"),
+      id: z.string().describe("Unique cue ID within the cue list"),
+      name: z.string().describe("Human-readable cue name (e.g. 'Opening Red', 'Blackout')"),
+      scene_id: z.string().describe("ID of the scene this cue activates"),
+      fade_in_ms: z.number().min(0).describe("Fade-in duration in milliseconds"),
+      hold_ms: z.number().min(0).describe("Hold duration in milliseconds (how long the scene stays at full)"),
+      fade_out_ms: z.number().min(0).describe("Fade-out duration in milliseconds"),
+    },
+    async (args) => {
+      try {
+        const cueInput: AddCueInput = {
+          id: args.id,
+          name: args.name,
+          scene_id: args.scene_id,
+          fade_in_ms: args.fade_in_ms,
+          hold_ms: args.hold_ms,
+          fade_out_ms: args.fade_out_ms,
+        };
+        const result = handleAddCue(args.cue_list_id, cueInput, cueManager);
+        return {
+          content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }],
+        };
+      } catch (err) {
+        return {
+          content: [{ type: "text" as const, text: `Error: ${(err as Error).message}` }],
+          isError: true,
+        };
+      }
+    },
+  );
+
+  server.tool(
+    "remove_cue",
+    "Remove a cue from a cue list by its ID.",
+    {
+      cue_list_id: z.string().describe("ID of the cue list"),
+      cue_id: z.string().describe("ID of the cue to remove"),
+    },
+    async (args) => {
+      try {
+        const result = handleRemoveCue(args.cue_list_id, args.cue_id, cueManager);
+        return {
+          content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }],
+        };
+      } catch (err) {
+        return {
+          content: [{ type: "text" as const, text: `Error: ${(err as Error).message}` }],
+          isError: true,
+        };
+      }
+    },
+  );
+
+  server.tool(
+    "reorder_cues",
+    "Reorder cues within a cue list by providing the complete list of cue IDs in the desired order. All existing cue IDs must be included.",
+    {
+      cue_list_id: z.string().describe("ID of the cue list"),
+      cue_ids: z.array(z.string()).describe("Ordered array of all cue IDs in the desired sequence"),
+    },
+    async (args) => {
+      try {
+        const result = handleReorderCues(args.cue_list_id, args.cue_ids, cueManager);
+        return {
+          content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }],
+        };
+      } catch (err) {
+        return {
+          content: [{ type: "text" as const, text: `Error: ${(err as Error).message}` }],
+          isError: true,
+        };
+      }
+    },
+  );
+
+  server.tool(
+    "list_cue_lists",
+    "List all cue lists with summary information including ID, name, cue count, and loop setting.",
+    {},
+    async () => {
+      const result = handleListCueLists(cueManager);
+      return {
+        content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }],
+      };
+    },
+  );
+
+  server.tool(
+    "delete_cue_list",
+    "Delete a cue list by its ID. This action cannot be undone.",
+    {
+      id: z.string().describe("ID of the cue list to delete"),
+    },
+    async (args) => {
+      try {
+        const result = handleDeleteCueList(args.id, cueManager);
+        return {
+          content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }],
+        };
+      } catch (err) {
+        return {
+          content: [{ type: "text" as const, text: `Error: ${(err as Error).message}` }],
           isError: true,
         };
       }
