@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.6.0] - 2026-03-01
+
+### Added
+- `ShowStorage` class for JSON-based show persistence (save, load, list, delete)
+- Show management tools: `save_show`, `load_show`, `list_shows` with full state round-trip
+- `EffectEngine` class with strategy pattern, fire-and-forget async loops at ~40fps
+- Chase, rainbow, and strobe effect calculators with configurable parameters
+- Effect tools: `apply_effect`, `stop_effect` for dynamic lighting effects
+- End-to-end integration tests (5 tests): full show workflow, save/load round-trip, live control, effect lifecycle, simultaneous effects
+- 28 total MCP tools registered
+- 200 tests passing across 10 test files
+
 ## [0.5.0] - 2026-03-01
 
 ### Added

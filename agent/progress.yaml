@@ -3,7 +3,7 @@ project:
   version: 0.1.0
   type: mcp-server
   started: 2026-03-01
-  status: in_progress
+  status: completed
   description: |
     MCP server for programming and controlling DMX lighting shows via OLA.
     Provides high-level abstractions (fixtures, scenes, cues, effects) as MCP tools,
@@ -203,11 +203,11 @@ milestones:
 
   - id: M6
     title: Show Management & Effects
-    status: in_progress
+    status: completed
     document: agent/milestones/milestone-6-show-management-effects.md
     estimated_weeks: 1
     tasks_total: 6
-    tasks_completed: 5
+    tasks_completed: 6
     tasks:
       - id: 30
         title: Implement Show Storage
@@ -236,7 +236,8 @@ milestones:
         document: agent/tasks/milestone-6-show-management-effects/task-34-register-show-effect-mcp-tools.md
       - id: 35
         title: End-to-End Integration Tests
-        status: not_started
+        status: completed
+        completed_date: 2026-03-01
         document: agent/tasks/milestone-6-show-management-effects/task-35-end-to-end-tests.md
 
 documentation:
@@ -247,10 +248,20 @@ documentation:
 
 progress:
   planning: 100
-  implementation: 83
-  overall: 89
+  implementation: 100
+  overall: 100
 
 recent_work:
+  - date: 2026-03-01
+    description: |
+      Completed M6: Show Management & Effects. ShowStorage, show save/load tools, EffectEngine
+      with chase/rainbow/strobe effects, 5 new MCP tools, and E2E integration tests.
+    items:
+      - "✅ M6 complete (6/6 tasks): ShowStorage, show tools, EffectEngine, effects, MCP registration, E2E tests"
+      - "✅ 200 tests passing across 10 test files"
+      - "✅ 28 MCP tools registered"
+      - "✅ Version bumped to 0.6.0"
+      - "✅ All 6 milestones complete — project feature-complete"
   - date: 2026-03-01
     description: |
       Completed M5: Playback & Live Control. CueSequencer with fire-and-forget playback,
@@ -292,7 +303,7 @@ recent_work:
       - ✅ M5 partial (2/6 tasks): set_fixture_color and blackout implemented
 
 next_steps:
-  - "Complete M6 (Show Management & Effects) for persistence and effects"
+  - "All milestones complete. Project is feature-complete."
 
 notes:
   - Hardware: Enttec USB-C DMX adapter (OLA-native support)
