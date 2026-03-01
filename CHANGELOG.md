@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.7.0] - 2026-03-01
+
+### Added
+- `DMXEmulatorServer` — OLA-compatible HTTP server for hardware-free DMX development and testing
+- Browser-based DMX Monitor UI with real-time channel visualization via SSE, universe selector, dark theme
+- Emulator integration tests (9 tests): round-trip, frame recording, multi-universe, reset, setFixtureColor/blackout through HTTP
+- Standalone emulator entry point (`src/emulator/main.ts`) with SIGINT handling
+- npm scripts: `emulator` (start emulator), `dev:emulator` (start with hot-reload)
+- Updated `.env.example` with emulator usage instructions
+- 209 tests passing across 11 test files
+
 ## [0.6.0] - 2026-03-01
 
 ### Added

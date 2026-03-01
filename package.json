@@ -1,6 +1,6 @@
 {
   "name": "dmx-mcp",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "type": "module",
   "description": "MCP server for DMX lighting control via OLA",
   "main": "dist/index.js",
@@ -9,6 +9,8 @@
     "typecheck": "tsc --noEmit",
     "start": "node dist/index.js",
     "dev": "tsx watch src/index.ts",
+    "emulator": "tsx src/emulator/main.ts",
+    "dev:emulator": "tsx watch src/emulator/main.ts",
     "test": "vitest run",
     "test:watch": "vitest"
   },

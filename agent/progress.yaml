@@ -242,11 +242,11 @@ milestones:
 
   - id: M7
     title: DMX Emulator & Monitor UI
-    status: not_started
+    status: completed
     document: agent/milestones/milestone-7-dmx-emulator.md
     estimated_weeks: 0.5
     tasks_total: 4
-    tasks_completed: 3
+    tasks_completed: 4
     tasks:
       - id: 36
         title: Implement OLA Emulator Server
@@ -265,7 +265,8 @@ milestones:
         document: agent/tasks/milestone-7-dmx-emulator/task-38-emulator-integration-tests.md
       - id: 39
         title: Add Dev Scripts and Documentation
-        status: not_started
+        status: completed
+        completed_date: 2026-03-01
         document: agent/tasks/milestone-7-dmx-emulator/task-39-dev-scripts-documentation.md
 
 documentation:
@@ -276,10 +277,20 @@ documentation:
 
 progress:
   planning: 100
-  implementation: 90
-  overall: 93
+  implementation: 100
+  overall: 100
 
 recent_work:
+  - date: 2026-03-01
+    description: |
+      Completed M7: DMX Emulator & Monitor UI. OLA-compatible emulator server, browser monitor UI
+      with real-time SSE updates, 9 integration tests, dev scripts, and documentation.
+    items:
+      - "✅ M7 complete (4/4 tasks): DMXEmulatorServer, Monitor UI, integration tests, dev scripts"
+      - "✅ 209 tests passing across 11 test files"
+      - "✅ npm run emulator / npm run dev:emulator scripts added"
+      - "✅ Version bumped to 0.7.0"
+      - "✅ All 7 milestones complete — project fully implemented"
   - date: 2026-03-01
     description: |
       Completed M6: Show Management & Effects. ShowStorage, show save/load tools, EffectEngine
@@ -331,7 +342,8 @@ recent_work:
       - ✅ M5 partial (2/6 tasks): set_fixture_color and blackout implemented
 
 next_steps:
-  - "Implement M7 (DMX Emulator & Monitor UI) for hardware-free development and testing"
+  - "All 7 milestones complete — project fully implemented"
+  - "Optional: Implement OFL fixture profile import (see agent/design/local.fixture-profile-import.md)"
 
 notes:
   - Hardware: Enttec USB-C DMX adapter (OLA-native support)
